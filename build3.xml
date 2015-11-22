@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<project name="Hello World Project" default="deploy" basedir=".">
+
+	<property name="sitename" value="www.tutorialspoint.com"/>
+	<property file="build.properties"/>
+
+	<fileset dir="${src}" casesensitive="yes">
+		<include name="**/*.java"/>
+		<exclude name="**/*Stub*"/>
+	</fileset>
+
+	<patternset id="java.files.without.stubs">
+		<include name="src/**/*.java"/>
+		<exclude name="src/**/*Stub*"/>
+	</patternset>
+
+	<fileset dir="${src}" casesensitive="yes">
+		<patternset refid="java.files.without.stubs"/>
+	</fileset>
+
+	<target name="deploy" depends="package">
+		<echo>deploy</echo>
+	</target>
+
+	<target name="package" depends="clean,compile,info">
+		<echo>package</echo>
+	</target>
+
+	<target name="clean">
+		<echo>clean</echo>
+	</target>
+
+	<target name="compile">
+		<echo>compile</echo>
+	</target>
+
+	<target name="info">
+		<echo>Hello World - Welcome to Apache Ant!</echo>
+		<echo>${ant.file}</echo>
+		<echo>${ant.version}</echo>
+		<echo>${basedir}</echo>
+		<echo>${ant.java.version}</echo>
+		<echo>${ant.project.name}</echo>
+		<echo>${ant.project.default-target}</echo>
+		<echo>${ant.project.invoked-targets}</echo>
+		<echo>${ant.core.lib}</echo>
+		<echo>${ant.home}</echo>
+		<echo>${ant.lib.dir}</echo>
+		<echo>${sitename}</echo>
+		<echo>${site1}</echo>
+		<echo>${buildversion}</echo>
+	</target>
+
+</project>

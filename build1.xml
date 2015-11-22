@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<project name="fax" basedir="." default="build">
+	<property name="src.dir" value="src" />
+	<property name="web.dir" value="war" />
+	<property name="build.dir" value="${web.dir}/WEB-INF/classes" />
+	<property name="name" value="fax" />
+
+	<path id="master-classpath">
+		<fileset dir="${web.dir}/WEB-INF/lib">
+			<include name="*.jar" />
+		</fileset>
+		<pathelement path="${build.dir}" />
+	</path>
+
+	<target name="build" description="Compile source tree java files">
+		<mkdir dir="${build.dir}" />
+		<javac destdir="${build.dir}" source="1.8" target="1.8">
+			<src path="${src.dir}" />
+			<classpath refid="master-classpath" />
+		</javac>
+	</target>
+
+	<target name="clean" description="Clean output directories">
+		<delete>
+			<fileset dir="${build.dir}">
+				<include name="**/*.class" />
+			</fileset>
+		</delete>
+	</target>
+
+	<target name="generate-javadoc">
+		<javadoc packagenames="com.dzhou.*" sourcepath="${src.dir}"
+			destdir="doc" version="true" windowtitle="Fax Application">
+
+			<doctitle>
+				<![CDATA[= Fax Application =]]>
+			</doctitle>
+
+			<bottom>
+				<![CDATA[Copyright © 2011. All Rights Reserved.]]>
+			</bottom>
+
+			<group title="util packages" packages="faxapp.util.*" />
+			<group title="web packages" packages="faxapp.web.*" />
+			<group title="data packages" packages="faxapp.entity.*:faxapp.dao.*" />
+		</javadoc>
+
+		<echo message="java doc has been generated!" />
+	</target>
+
+	<target name="build-jar">
+		<jar destfile="${web.dir}/lib/util.jar" basedir="${build.dir}"
+			includes="com/dzhou/**" excludes="**/ATest.class">
+
+			<manifest>
+				<attribute name="Main-Class" value="com.tutorialspoint.util.FaxUtil" />
+			</manifest>
+
+		</jar>
+	</target>
+
+	<target name="unittest">
+		<junit haltonfailure="true" printsummary="true">
+			<test name="com.dzhou.ant.Test" />
+		</junit>
+	</target>
+
+	<target name="notify">
+		<java fork="true" failonerror="yes" classname="com.dzhou.ant.Test">
+			<arg line="admin@test.com" />
+		</java>
+	</target>
+</project>
