@@ -1,0 +1,129 @@
+<project name="HelloWorld" basedir="." default="test">
+
+	<property name="src.dir" value="src" />
+	<property name="build.dir" value="build" />
+	<property name="classes.dir" value="${build.dir}/classes" />
+	<property name="jar.dir" value="${build.dir}/jar" />
+	<property name="lib.dir" value="lib" />
+	<property name="main-class" value="com.dzhou.ant.HelloWorld" />
+	<property name="ant.test.lib" value="ant-testutil.jar" />
+	<property name="report.dir" value="report" />
+	<property name="junit.out.dir.xml" value="${report.dir}/junit/xml" />
+	<property name="junit.out.dir.html" value="${report.dir}/junit/html" />
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar" />
+	</path>
+
+	<path id="application" location="${jar.dir}/${ant.project.name}.jar" />
+
+	<path id="classpath.run">
+		<path path="${java.class.path}" />
+		<path refid="classpath" />
+		<path refid="application" />
+	</path>
+
+	<path id="classpath.test">
+		<path refid="classpath.run" />
+		<path location="${ant.test.lib}" />
+	</path>
+
+	<target name="clean" description="Delete all generated files">
+		<delete dir="${build.dir}" />
+		<delete failonerror="false" includeEmptyDirs="true">
+			<fileset dir="." includes="${ant.project.name}.jar" />
+			<fileset dir="${classes.dir}" />
+			<fileset dir="${report.dir}" />
+		</delete>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${classes.dir}" />
+		<javac includeantruntime="false" srcdir="${src.dir}" destdir="${classes.dir}" classpathref="classpath" />
+		<copy todir="${classes.dir}">
+			<fileset dir="${src.dir}" excludes="**/*.java" />
+		</copy>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${jar.dir}" />
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="run" depends="jar">
+		<java fork="true" classname="${main-class}">
+			<classpath>
+				<path refid="classpath" />
+				<path refid="application" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="junit" description="Runs the unit tests" depends="jar">
+		<delete dir="${junit.out.dir.xml}" />
+		<mkdir dir="${junit.out.dir.xml}" />
+		<junit printsummary="yes" haltonfailure="yes">
+			<classpath refid="classpath.test" />
+			<formatter type="xml" />
+			<formatter type="xml" />
+			<batchtest fork="yes" todir="${junit.out.dir.xml}">
+				<fileset dir="${src.dir}" includes="**/*Test.java" />
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="junitreport" description="Create a report for the rest result">
+		<junitreport todir="${junit.out.dir.html}">
+			<fileset dir="${junit.out.dir.xml}">
+				<include name="*.xml" />
+			</fileset>
+			<report format="frames" todir="${junit.out.dir.html}" />
+		</junitreport>
+	</target>
+
+	<target name="test" depends="clean,junit,junitreport" description="Runs unit tests and creates a report" />
+
+	<target name="clean-build" depends="clean,jar" />
+
+
+	<target name="use.init" description="Taskdef the HelloWorld-Task" depends="jar">
+		<taskdef name="helloworld" classname="com.dzhou.ant.HelloWorld">
+			<classpath>
+				<path refid="classpath" />
+				<path refid="application" />
+			</classpath>
+		</taskdef>
+	</target>
+
+
+	<target name="use.without" description="Use without any" depends="use.init">
+		<helloworld />
+	</target>
+
+	<target name="use.message" description="Use with attribute 'message'" depends="use.init">
+		<helloworld message="attribute-text" />
+	</target>
+
+	<target name="use.fail" description="Use with attribute 'fail'" depends="use.init">
+		<helloworld fail="true" />
+	</target>
+
+	<target name="use.nestedText" description="Use with nested text" depends="use.init">
+		<helloworld>nested-text</helloworld>
+	</target>
+
+	<target name="use.nestedElement" description="Use with nested 'message'" depends="use.init">
+		<helloworld>
+			<message msg="Nested Element 1" />
+			<message msg="Nested Element 2" />
+		</helloworld>
+	</target>
+
+
+	<target name="use" description="Try all (w/out use.fail)" depends="use.without,use.message,use.nestedText,use.nestedElement" />
+
+</project>
