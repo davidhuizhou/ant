@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="FindTask" basedir="." default="test">
+<project name="FindTaskOne" basedir="." default="test">
 
 	<property name="src.dir" value="src" />
 	<property name="build.dir" value="build" />

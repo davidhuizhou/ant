@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="FindTaskTwo" basedir="." default="test">
+<project name="FindTaskFour" basedir="." default="test">
 
 	<property name="src.dir" value="src" />
 	<property name="build.dir" value="build" />
@@ -52,11 +52,17 @@
 	<target name="use.init" description="Taskdef¥ the Find-Task" depends="jar">
 		<taskdef name="findOne" classname="com.dzhou.ant.FindOne" classpathref="classpath.test" />
 		<taskdef name="findTwo" classname="com.dzhou.ant.FindTwo" classpathref="classpath.test" />
+		<taskdef name="findThree" classname="com.dzhou.ant.FindThree" classpathref="classpath.test" />
+		<taskdef name="findFour" classname="com.dzhou.ant.FindFour" classpath="${ant.project.name}.jar"/>
 	</target>
 
 	<target name="use.simple" depends="use.init">
-		<findOne property="test" value="test-value" />
-		<findOne print="test" />
+		<find file="ant.jar" location="location.ant-jar">
+			<path>
+				<fileset dir="${ant.home}" includes="**/*.jar"/>
+			</path>
+		</find>
+		<echo>ant.jar found on ${location.ant-jar}</echo>
 	</target>
 
 	<target name="testFileNotPresent" depends="use.init">
@@ -71,6 +77,46 @@
 		</findTwo>
 	</target>
 
+	<target name="test.init">
+		<mkdir dir="test1/dir11/dir111"/>
+		<mkdir dir="test1/dir11/dir112"/>
+		<mkdir dir="test1/dir12/"/>
+		<mkdir dir="test1/dir13/dir131"/>
+		<mkdir dir="test1/dir13/dir132"/>
+		<touch file="test1/dir11/dir111/test"/>
+		<touch file="test1/dir11/dir111/not"/>
+		<touch file="test1/dir11/dir111/not2"/>
+		<touch file="test1/dir11/dir112/test"/>
+		<touch file="test1/dir11/dir112/not"/>
+		<touch file="test1/dir11/dir112/not2"/>
+		<touch file="test1/dir12/test"/>
+		<touch file="test1/dir12/not"/>
+		<touch file="test1/dir12/not2"/>
+		<touch file="test1/dir13/dir131/test"/>
+		<touch file="test1/dir13/dir131/not"/>
+		<touch file="test1/dir13/dir131/not2"/>
+		<touch file="test1/dir13/dir132/test"/>
+		<touch file="test1/dir13/dir132/not"/>
+		<touch file="test1/dir13/dir132/not2"/>
+		<mkdir dir="test2"/>
+		<copy todir="test2">
+			<fileset dir="test1"/>
+		</copy>
+	</target>
+
+	<target name="testMultipleFiles" depends="use.init,test.init">
+		<touch file="test1/dir11/dir111/test"/>
+		<find file="test" location="location.test" delimiter=";">
+			<path>
+				<fileset dir="test1"/>
+				<fileset dir="test2"/>
+			</path>
+		</find>
+		<delete>
+			<fileset dir="test1"/>
+			<fileset dir="test2"/>
+		</delete>
+	</target>
 
 	<target name="junit" description="Runs the unit tests" depends="jar">
 		<delete dir="${junit.out.dir.xml}" />

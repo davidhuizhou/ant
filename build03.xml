@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<project name="FindTaskTwo" basedir="." default="test">
+<project name="FindTaskThree" basedir="." default="test">
 
 	<property name="src.dir" value="src" />
 	<property name="build.dir" value="build" />
@@ -52,11 +52,16 @@
 	<target name="use.init" description="Taskdef¥ the Find-Task" depends="jar">
 		<taskdef name="findOne" classname="com.dzhou.ant.FindOne" classpathref="classpath.test" />
 		<taskdef name="findTwo" classname="com.dzhou.ant.FindTwo" classpathref="classpath.test" />
+		<taskdef name="findThree" classname="com.dzhou.ant.FindTwo" classpathref="classpath.test" />
 	</target>
 
 	<target name="use.simple" depends="use.init">
-		<findOne property="test" value="test-value" />
-		<findOne print="test" />
+		<find file="ant.jar" location="location.ant-jar">
+			<path>
+				<fileset dir="${ant.home}" includes="**/*.jar"/>
+			</path>
+		</find>
+		<echo>ant.jar found on ${location.ant-jar}</echo>
 	</target>
 
 	<target name="testFileNotPresent" depends="use.init">
